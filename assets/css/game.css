@@ -1,0 +1,21 @@
+.container {
+	width: 100%;
+	text-align: center;
+	position: relative;
+}
+
+.background {
+	position: absolute;
+	width: 800px;
+	height: 600px;
+	left: 0;
+	background: rgb(114, 145, 211);
+}
+
+.canvas {
+	margin: 0 auto;
+	position: absolute;
+	width: 800px;
+	height: 600px;
+	left: 0;
+}
