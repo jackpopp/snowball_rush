@@ -54,7 +54,9 @@ currentX = 250,
 // score info
 mulitipler = 1,
 scoreText = null,
-score = 0,
+score = 10,
+meters = 0,
+metersText = null,
 
 // player info
 currentPlayerSpeed = 200,
@@ -69,12 +71,12 @@ MAX_X = 150,
 WORLD_BOUNDS = 2000,
 SPEED_INCREMENT = 25,
 BG_COLOUR = "#73e8ff",
-TEXT_COLOUR = "#1F7DAE",
+TEXT_COLOUR = "#033c4f",
 currentWorldBounds = WORLD_BOUNDS;
 
 WebFontConfig = {
 
-    active: function() { game.time.events.add(Phaser.Timer.SECOND, createScoreText, this); },
+    active: function() { game.time.events.add(Phaser.Timer.SECOND, createText, this); },
 
     //  The Google Fonts we want to load (specify as many as you like in the array)
     google: {
@@ -158,7 +160,7 @@ function addPlayer()
     
     player.body.data.gravityScale = 1;
     player.body.collideWorldBounds = true;
-    player.body.collides([groundsCollisionGroup], hitGrounds, this);
+    player.body.collides([groundsCollisionGroup], null, this);
     player.body.collides([snowflakesCollisionGroup], null, this);
 
     player.movement = {};
@@ -176,11 +178,25 @@ function init()
     game.camera.follow(player);   
 }
 
+function createText()
+{
+    createScoreText()
+    createMetersText()
+}
+
 function createScoreText()
 {
-    var style = { font: "65px Londrina Solid", fill: TEXT_COLOUR }; 
+    var style = { font: "35px Londrina Solid", fill: TEXT_COLOUR }; 
     scoreText = game.add.text(10, 10, score.toString(), style);
     scoreText.fixedToCamera = true
+}
+
+function createMetersText()
+{
+    /*
+    var style = { font: "35px Londrina Solid", fill: TEXT_COLOUR }; 
+    metersText = game.add.text(10, 50, score.toString(), style);
+    metersText.fixedToCamera = true*/
 }
 
 function setWorldBounds()
@@ -203,6 +219,7 @@ function update()
 {
     if (game.started)
     {
+        meters += (Math.round(player.x - playerLastX))
         if (game.camera.x > lastCameraX)
         {
             mountainOne.tilePosition.x -= 0.2; 
@@ -229,9 +246,16 @@ function update()
         if ( ! isGameOver() )
         {
             player.body.moveRight(currentPlayerSpeed)
+
             if (scoreText != null)
             {
-                scoreText.text = score;   
+                scoreText.text = score/10+" x "+Math.floor(meters/10)+" m";   
+            }
+
+            if (metersText != null)
+            {
+
+                //metersText.text = Math.floor(meters/10)+" m";   
             }
         }
         else 
@@ -265,7 +289,7 @@ function gameOver()
     textOne = game.add.text( (game.camera.x + (game.width/3) + 50 ), (game.world.centerY - 30), text, style);
     textOne.inputEnabled = true;
 
-    text = "Play again?";
+    text = "You scored "+Math.floor((score/10)*(Math.floor(meters/10)))+"\n\nPlay again?";
     fontSize = 30;
     style = { font: fontSize+"px Londrina Solid", fill: TEXT_COLOUR, align: "center" };
     textTwo = game.add.text( (game.camera.x + (game.width/3) + 110 ), (game.world.centerY + 35), text, style);
@@ -364,7 +388,7 @@ function generateGround(x, y, collisionGroupToSet, collisionGroupsToHit, callbac
     ground.body.setCollisionGroup(collisionGroupToSet);
     ground.body.static = true;
     // ground.body.rotation = generateAngle( (x1) , y1, (x2), y2);
-    ground.body.collides(collisionGroupsToHit, callback, this);
+    ground.body.collides(collisionGroupsToHit, hitGrounds, this);
 
     ground.events.onOutOfBounds.add( removeGround, this );
 
@@ -477,10 +501,13 @@ function generateRandomNumberBetweenMinAndMax(min, max)
     //return Math.floor((Math.random() * max) + min);
 }
 
-function hitGrounds()
+function hitGrounds(ground)
 {
+    // if player y is less than ground y then we've hit from the top from the top
+    //console.log(player.y > ground.sprite.y)
+    //game.paused = true
     // if last button press wasnt up
-    if (lastKeyCode != 38)
+    if (lastKeyCode != 38 && (player.y < ground.sprite.y))
     {
         player.movement.jumpAmount = 0;
     }
