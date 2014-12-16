@@ -74,6 +74,8 @@ BG_COLOUR = "#73e8ff",
 TEXT_COLOUR = "#033c4f",
 currentWorldBounds = WORLD_BOUNDS;
 
+GENERATE_BLACK_SNOWFAKE = 10;
+
 WebFontConfig = {
 
     active: function() { game.time.events.add(Phaser.Timer.SECOND, createText, this); },
@@ -97,9 +99,13 @@ function preload()
     game.load.image('large_platform', 'assets/img/large_platform.png', 0, 0);
 
 	game.load.image('player', 'assets/img/snowball.png');
+
     game.load.image('mountain', 'assets/img/mountain.png');
     game.load.image('mountain_two', 'assets/img/mountain_two.png');
+
     game.load.image('snowflake', 'assets/img/snowflake.png');
+    game.load.image('snowflake_black', 'assets/img/snowflake_black.png');
+
     game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 }
  
@@ -392,39 +398,60 @@ function generateGround(x, y, collisionGroupToSet, collisionGroupsToHit, callbac
 
     ground.events.onOutOfBounds.add( removeGround, this );
 
+    // do this dynamically on the size
+    // should we generate a black flake
+    // should we generate a red flake
     if (ground.width > 150)
     {
         // add snowflakes
-        flake = snowflakes.create(x - 75, y - 50, 'snowflake');
-        flake.height = 30
-        flake.width = 30
-        flake.body.setRectangleFromSprite();
-        flake.body.setCollisionGroup(snowflakesCollisionGroup);
-        flake.body.static = true;
-        flake.body.collides(playerCollisionGroup, hitFlake, flake);
-
-        flake = snowflakes.create(x + 75, y - 50, 'snowflake');
-        flake.height = 30
-        flake.width = 30
-        flake.body.setRectangleFromSprite();
-        flake.body.setCollisionGroup(snowflakesCollisionGroup);
-        flake.body.static = true;
-        flake.body.collides(playerCollisionGroup, hitFlake, flake);
+        generateSnowflake(x - 75, y - 50)
+        generateSnowflake(x + 75, y - 50)
     }
     else
     {
-        flake = snowflakes.create(x, y - 50, 'snowflake');
-        flake.height = 30
-        flake.width = 30
-        flake.body.setRectangleFromSprite();
-        flake.body.setCollisionGroup(snowflakesCollisionGroup);
-        flake.body.static = true;
-        flake.body.collides(playerCollisionGroup, hitFlake, flake);
+        generateSnowflake(x, y - 50)
     }
 
 
     return platform.w
 
+}
+
+function generateSnowflake(x, y)
+{
+    flake = null;
+
+    if (generateRandomNumberBetweenMinAndMax(1, GENERATE_BLACK_SNOWFAKE) === GENERATE_BLACK_SNOWFAKE)
+    {
+        flake = snowflakes.create(x, y , 'snowflake_black');
+        flake.bad = true;
+    }
+    else
+    {
+        flake = snowflakes.create(x, y , 'snowflake');
+    }
+    
+    flake.height = 30
+    flake.width = 30
+    flake.body.setRectangleFromSprite();
+    flake.body.setCollisionGroup(snowflakesCollisionGroup);
+    flake.body.static = true;
+    flake.body.collides(playerCollisionGroup, hitFlake, flake);
+    snowflakeTween(flake);
+
+    return flake;
+}
+
+function snowflakeTween(snowflake)
+{
+    var bounce = game.add.tween(snowflake);
+
+    bounce.to({ y: snowflake.y - 10 }, 200, Phaser.Easing.Bounce.In)
+        .to({ y: snowflake.y + 10 }, 200, Phaser.Easing.Bounce.In);
+
+    //bounce.onComplete.add(function(snowflake){snowflakeTween(snowflake)});
+
+    bounce.start();
 }
 
 function generateRandomGround()
@@ -527,10 +554,16 @@ function hitGrounds(ground)
 
 function hitFlake(flake)
 {
-   flake.sprite.kill()
-   flake.sprite.destroy()
-   resetPlayerJump()
-   score+=1
+    if (flake.sprite.bad)
+    {
+        gameOver();
+        return;
+    }
+
+    flake.sprite.kill()
+    flake.sprite.destroy()
+    resetPlayerJump()
+    score+=1
 }
 
 function resetPlayerJump()
@@ -550,6 +583,7 @@ function render() {
 
 function restart()
 {
+    /*
     lastKeyCode = null,
     currentY = 0,
     currentYPosition = 1,
@@ -567,6 +601,8 @@ function restart()
     currentWorldBounds = WORLD_BOUNDS; 
     game.paused = false
     game.over = false; 
+    */
+    window.location.reload()
 
     // reset the gropus
     // reset the players
