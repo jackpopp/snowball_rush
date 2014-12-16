@@ -30,6 +30,7 @@ var game = new Phaser.Game(WORLD_WIDTH, WORLD_HEIGHT, Phaser.AUTO, '', { preload
 // background
 mountainOne,
 mountainTwo,
+floor,
 
 //snow
 
@@ -100,6 +101,7 @@ function preload()
 
 	game.load.image('player', 'assets/img/snowball.png');
 
+    game.load.image('floor', 'assets/img/floor_two.png');
     game.load.image('mountain', 'assets/img/mountain.png');
     game.load.image('mountain_two', 'assets/img/mountain_two.png');
 
@@ -121,8 +123,6 @@ function create()
     mountainOne = game.add.tileSprite(0, 0, WORLD_BOUNDS, WORLD_HEIGHT, 'mountain');
     mountainTwo = game.add.tileSprite(0, 0, WORLD_BOUNDS, WORLD_HEIGHT, 'mountain_two');
 
-	setWorldBounds();
-
 
 	playerCollisionGroup = game.physics.p2.createCollisionGroup();
 	groundsCollisionGroup = game.physics.p2.createCollisionGroup();
@@ -139,6 +139,9 @@ function create()
     // add start button
     // click event and run init
 	init();
+
+    floor = game.add.tileSprite(0, 0, WORLD_BOUNDS, WORLD_HEIGHT, 'floor');
+    setWorldBounds();
 	
 	game.input.keyboard.onUpCallback = function()
 	{
@@ -150,6 +153,16 @@ function create()
 		checkCursors()
 	};
 }
+
+function init()
+{
+    game.started = true;
+    generateGround(150, 300, groundsCollisionGroup, playerCollisionGroup);
+    generateRandomGround();
+    player = addPlayer();
+    game.camera.follow(player);   
+}
+
 
 /**
     Creates the games main player
@@ -174,16 +187,6 @@ function addPlayer()
 
     return player;
 }
-
-function init()
-{
-    game.started = true;
-    generateGround(150, 300, groundsCollisionGroup, playerCollisionGroup);
-    generateRandomGround();
-    player = addPlayer();
-    game.camera.follow(player);   
-}
-
 function createText()
 {
     createScoreText()
@@ -217,8 +220,11 @@ function setWorldBounds()
 
     game.world.setBounds(xBound, 0, currentWorldBounds, WORLD_HEIGHT);;
     currentWorldBounds+=WORLD_BOUNDS;
+
+    // stretch our background images to fit the size of the world bounds
     mountainOne.width = currentWorldBounds
     mountainTwo.width = currentWorldBounds
+    floor.width = currentWorldBounds
 }
  
 function update() 
@@ -229,7 +235,8 @@ function update()
         if (game.camera.x > lastCameraX)
         {
             mountainOne.tilePosition.x -= 0.2; 
-            mountainTwo.tilePosition.x -= 0.8;   
+            mountainTwo.tilePosition.x -= 0.5;   
+            floor.tilePosition.x -= 1;   
         }
         
         lastCameraX = game.camera.x
