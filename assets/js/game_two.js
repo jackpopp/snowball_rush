@@ -48,7 +48,7 @@ lastKeyCode = null,
 
 // ground building info
 currentY = 0,
-currentYPosition = 1,
+currentYPosition = 2,
 currentX = 250,
 
 // score info
@@ -507,9 +507,20 @@ function hitGrounds(ground)
     //console.log(player.y > ground.sprite.y)
     //game.paused = true
     // if last button press wasnt up
-    if (lastKeyCode != 38 && (player.y < ground.sprite.y))
+    // reset 
+    /*
+    if (player.y < ground.sprite.y)
+    {   
+        console.log('on top')
+    }
+    else 
     {
-        player.movement.jumpAmount = 0;
+        console.log('below reset')
+    }*/
+
+    if (lastKeyCode != 38 || ( ! player.y < ground.sprite.y))
+    {
+        resetPlayerJump()
     }
     //player.body.static = true;
 }
@@ -518,7 +529,13 @@ function hitFlake(flake)
 {
    flake.sprite.kill()
    flake.sprite.destroy()
+   resetPlayerJump()
    score+=1
+}
+
+function resetPlayerJump()
+{
+    player.movement.jumpAmount = 0;
 }
 
 function removeGround(ground)
@@ -531,3 +548,38 @@ function render() {
     //game.debug.spriteCoords(player, 32, 500);
 }
 
+function restart()
+{
+    lastKeyCode = null,
+    currentY = 0,
+    currentYPosition = 1,
+    currentX = 250,
+    mulitipler = 1,
+    scoreText = null,
+    score = 10,
+    meters = 0,
+    metersText = null,
+    currentPlayerSpeed = 200,
+    playerLastX = 0,
+    lastCameraX = 0;
+    WORLD_BOUNDS = 2000,
+    SPEED_INCREMENT = 25,
+    currentWorldBounds = WORLD_BOUNDS; 
+    game.paused = false
+    game.over = false; 
+
+    // reset the gropus
+    // reset the players
+    // reset the ice
+    // reset the bounds
+
+    // run innit
+}
+
+$(document).on('click', 'canvas', function()
+{
+    if (game.over)
+    {
+        restart()
+    }
+})
