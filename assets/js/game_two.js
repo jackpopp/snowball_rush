@@ -554,14 +554,17 @@ function hitGrounds(ground)
 
 function hitFlake(flake)
 {
-    if (flake.sprite.bad)
+    isBad = flake.sprite.bad
+    
+    flake.sprite.kill()
+    flake.sprite.destroy()
+
+    if (isBad)
     {
         gameOver();
         return;
     }
 
-    flake.sprite.kill()
-    flake.sprite.destroy()
     resetPlayerJump()
     score+=1
 }
