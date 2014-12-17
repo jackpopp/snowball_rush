@@ -30,7 +30,6 @@ var game = new Phaser.Game(WORLD_WIDTH, WORLD_HEIGHT, Phaser.AUTO, '', { preload
 // background
 mountainOne,
 mountainTwo,
-floor,
 
 //snow
 
@@ -93,15 +92,14 @@ game.over = false;
 
 function preload() 
 {
-	//game.load.image('ground', 'assets/img/ground_snow_two.png', 0, 0);
+    //game.load.image('ground', 'assets/img/ground_snow_two.png', 0, 0);
     game.load.image('medium_icicle_platform', 'assets/img/medium_icicle_platform.png', 0, 0);
     game.load.image('medium_platform', 'assets/img/medium_platform.png', 0, 0);
     game.load.image('small_platform', 'assets/img/small_platform.png', 0, 0);
     game.load.image('large_platform', 'assets/img/large_platform.png', 0, 0);
 
-	game.load.image('player', 'assets/img/snowball.png');
+    game.load.image('player', 'assets/img/snowball.png');
 
-    game.load.image('floor', 'assets/img/floor_two.png');
     game.load.image('mountain', 'assets/img/mountain.png');
     game.load.image('mountain_two', 'assets/img/mountain_two.png');
 
@@ -114,23 +112,25 @@ function preload()
 function create() 
 {
     game.physics.startSystem(Phaser.Physics.P2JS);
-	game.physics.p2.setImpactEvents(true);
-	game.physics.p2.restitution = 0;
-	game.physics.p2.gravity.y = 300;
-	//game.physics.p2.updateBoundsCollisionGroup();
+    game.physics.p2.setImpactEvents(true);
+    game.physics.p2.restitution = 0;
+    game.physics.p2.gravity.y = 300;
+    //game.physics.p2.updateBoundsCollisionGroup();
 
     game.stage.backgroundColor = BG_COLOUR;
     mountainOne = game.add.tileSprite(0, 0, WORLD_BOUNDS, WORLD_HEIGHT, 'mountain');
     mountainTwo = game.add.tileSprite(0, 0, WORLD_BOUNDS, WORLD_HEIGHT, 'mountain_two');
 
+    setWorldBounds();
 
-	playerCollisionGroup = game.physics.p2.createCollisionGroup();
-	groundsCollisionGroup = game.physics.p2.createCollisionGroup();
+
+    playerCollisionGroup = game.physics.p2.createCollisionGroup();
+    groundsCollisionGroup = game.physics.p2.createCollisionGroup();
     snowflakesCollisionGroup = game.physics.p2.createCollisionGroup();
 
-	grounds = game.add.group();
-	grounds.enableBody = true; 
-	grounds.physicsBodyType = Phaser.Physics.P2JS;
+    grounds = game.add.group();
+    grounds.enableBody = true; 
+    grounds.physicsBodyType = Phaser.Physics.P2JS;
 
     snowflakes = game.add.group();
     snowflakes.enableBody = true; 
@@ -138,31 +138,18 @@ function create()
 
     // add start button
     // click event and run init
-	init();
+    init();
+    
+    game.input.keyboard.onUpCallback = function()
+    {
+        lastKeyCode = null;
+    };
 
-    floor = game.add.tileSprite(0, 0, WORLD_BOUNDS, WORLD_HEIGHT, 'floor');
-    setWorldBounds();
-	
-	game.input.keyboard.onUpCallback = function()
-	{
-		lastKeyCode = null;
-	};
-
-	game.input.keyboard.onDownCallback = function()
-	{
-		checkCursors()
-	};
+    game.input.keyboard.onDownCallback = function()
+    {
+        checkCursors()
+    };
 }
-
-function init()
-{
-    game.started = true;
-    generateGround(150, 300, groundsCollisionGroup, playerCollisionGroup);
-    generateRandomGround();
-    player = addPlayer();
-    game.camera.follow(player);   
-}
-
 
 /**
     Creates the games main player
@@ -187,6 +174,16 @@ function addPlayer()
 
     return player;
 }
+
+function init()
+{
+    game.started = true;
+    generateGround(150, 300, groundsCollisionGroup, playerCollisionGroup);
+    generateRandomGround();
+    player = addPlayer();
+    game.camera.follow(player);   
+}
+
 function createText()
 {
     createScoreText()
@@ -220,11 +217,8 @@ function setWorldBounds()
 
     game.world.setBounds(xBound, 0, currentWorldBounds, WORLD_HEIGHT);;
     currentWorldBounds+=WORLD_BOUNDS;
-
-    // stretch our background images to fit the size of the world bounds
     mountainOne.width = currentWorldBounds
     mountainTwo.width = currentWorldBounds
-    floor.width = currentWorldBounds
 }
  
 function update() 
@@ -235,8 +229,7 @@ function update()
         if (game.camera.x > lastCameraX)
         {
             mountainOne.tilePosition.x -= 0.2; 
-            mountainTwo.tilePosition.x -= 0.5;   
-            floor.tilePosition.x -= 1;   
+            mountainTwo.tilePosition.x -= 0.8;   
         }
         
         lastCameraX = game.camera.x
@@ -355,7 +348,7 @@ function cameraHasHitWorldBounds()
 
 function checkCursors()
 {
-	/* 38 up, 40 down, 37 left, 39 right */
+    /* 38 up, 40 down, 37 left, 39 right */
 
     if (game.input.keyboard.isDown(38) && lastKeyCode != 38 && player.movement.jumpAmount < 2)
     {
@@ -382,7 +375,7 @@ function checkCursors()
     }
 
     if (game.input.keyboard.lastKey)
-			lastKeyCode = game.input.keyboard.lastKey.keyCode;
+            lastKeyCode = game.input.keyboard.lastKey.keyCode;
 }
 
 function generateGround(x, y, collisionGroupToSet, collisionGroupsToHit, callback, width)
@@ -393,7 +386,7 @@ function generateGround(x, y, collisionGroupToSet, collisionGroupsToHit, callbac
     platform = platforms[index]
     //console.log(platform)
 
-	ground = grounds.create(x, y, platform.name);
+    ground = grounds.create(x, y, platform.name);
     game.physics.p2.enable(ground, false);
     ground.width = platform.w;
     ground.height = platform.h;
@@ -456,7 +449,7 @@ function snowflakeTween(snowflake)
     bounce.to({ y: snowflake.y - 10 }, 200, Phaser.Easing.Bounce.In)
         .to({ y: snowflake.y + 10 }, 200, Phaser.Easing.Bounce.In);
 
-    //bounce.onComplete.add(function(snowflake){snowflakeTween(snowflake)});
+    bounce.onComplete.add(function(snowflake){snowflakeTween(snowflake)});
 
     bounce.start();
 }
@@ -522,11 +515,11 @@ function generateY(pos)
 
 function generateAngle(x1, y1, x2, y2)
 {
-	pointOne = new Phaser.Point(x1, y1);
-	pointTwo = new Phaser.Point(x2, y2);
+    pointOne = new Phaser.Point(x1, y1);
+    pointTwo = new Phaser.Point(x2, y2);
 
-	return game.physics.arcade.angleBetween(pointOne, pointTwo)
-	//return (game.physics.arcade.angleBetween(pointOne, pointTwo) * (180/Math.PI));
+    return game.physics.arcade.angleBetween(pointOne, pointTwo)
+    //return (game.physics.arcade.angleBetween(pointOne, pointTwo) * (180/Math.PI));
 }
 
 function generateRandomNumberBetweenMinAndMax(min, max)

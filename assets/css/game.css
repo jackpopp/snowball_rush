@@ -1,7 +1,15 @@
+body {
+	font-family: 'Londrina Solid', cursive;
+	color: #033c4f;
+}
+
 .container {
 	width: 100%;
 	text-align: center;
 	position: relative;
+}
+
+.hidden {
 	display: none;
 }
 
@@ -14,6 +22,6 @@
 }
 
 canvas {
-	margin: 100px auto;
-	border: 2px solid #033c4f;
+	margin: 50px auto;
+	border: 0px solid #033c4f;
 }
