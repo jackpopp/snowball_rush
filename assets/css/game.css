@@ -73,7 +73,6 @@ h1,h2,h3 {
 
 .start-button:hover {
 	left: 532px;
-	transition: 0.5s all;
 	-ms-transform: rotate(3.5deg); /* IE 9 */
     -webkit-transform: rotate(3.5deg); /* Chrome, Safari, Opera */
     transform: rotate(3.5deg);
@@ -99,8 +98,7 @@ h1,h2,h3 {
 }
 
 .play-again:hover {
-	left: 446px;
-	transition: 0.5s all;
+	left: 440px;
 	-ms-transform: rotate(-5deg); /* IE 9 */
     -webkit-transform: rotate(-5deg); /* Chrome, Safari, Opera */
     transform: rotate(-5deg);

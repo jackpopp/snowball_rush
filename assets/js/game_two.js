@@ -1,3 +1,8 @@
+/**
+    This code is kinda rubbish since I was just hacking and learning phaserjs.
+    Dont judge me too harshly.
+**/
+
 WORLD_WIDTH = 1024,
 WORLD_HEIGHT = 576
 
