@@ -1,12 +1,28 @@
 body {
 	font-family: 'Londrina Solid', cursive;
+
 	color: #033c4f;
+	background: #F9FAFB;
+	padding: 0;
+	margin: 0;
+}
+
+h1,h2,h3 {
+	padding: 0;
+	margin: 0;
+}
+
+.wrapper {
+	width: 100%;
+	background: #73e8ff;
+	min-height: 666px;
 }
 
 .container {
 	width: 100%;
 	text-align: center;
 	position: relative;
+	margin: 0 auto;
 }
 
 .hidden {
@@ -21,7 +37,52 @@ body {
 	background: rgb(114, 145, 211);
 }
 
-canvas {
-	margin: 50px auto;
-	border: 0px solid #033c4f;
+.feature-container {
+	width: 1321px;
+}
+
+.frame {
+	position: absolute;
+	pointer-events: none;
+	background-image: url('../img/game_frame.png');
+	margin: 0 auto;
+	width: 1321px;
+	height: 637px;
+	background-size: 100% 100%;
+}
+
+.game-container {
+	left: 155px;
+	position: absolute;
+	width: 1024px;
+	height: 576px;
+	top: 61px;
+}
+
+.start-game {
+	position: absolute;
+	margin-top: 157px;
+}
+
+.start-button {
+	position: absolute;
+	left: 524px;
+	top: 239px;
+}
+
+@media screen and (max-width: 1326px) {
+
+	.frame {
+		display: none;
+	}
+
+	.game-container {
+		position: relative;
+		margin: 0 auto;
+		left: 0;
+	}
+
+	.feature-container {
+	width: 100%;
+}
 }

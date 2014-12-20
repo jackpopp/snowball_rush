@@ -8,25 +8,43 @@
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script src="assets/js/phaser.js"></script>
 	<script src="assets/js/game_two.js"></script>
+	<script src="PointerEvents/src/pointerevents.js"></script>
 	<title>Snowball Rush</title>
 </head>
 	<body>
-		<div class="container">
-			<h2>Press space once to jump, twice to double jump</h2>
-		</div>
-		
-		<div class="container game-over hidden">
-			<h1>Game Over!</h1>
-			<h2>Play again?</h2>
-			<button</button>
+		<div class="wrapper">
 
-			<h2>Submit your highscore?</h2>
-			<input placeholder="Name"></input>
-			<button></button>
-		</div>
-
-		<div class="container highscores hidden">
+			<div class="container">
+				<h2>&nbsp;</h2>
+				<!--<h2>Press space once to jump, twice to double jump</h2>-->
+			</div>
 			
+
+			<div class="container highscores hidden">
+				
+			</div>
+
+			<div class="container feature-container">
+				<div id="game-container" class="game-container hidden"></div>
+
+				<div class="container start-game js-start-game">
+					<img src="assets/img/start_sign.png">
+					<img class="start-button" src="assets/img/start_button.png">
+				</div>
+
+				<div class="container game-over hidden">
+					<h1>Game Over!</h1>
+					<h2>Play again?</h2>
+					<button</button>
+
+					<h2>Submit your highscore?</h2>
+					<input placeholder="Name"></input>
+					<button></button>
+				</div>
+
+				<div class="frame"></div>
+			</div>	
+
 		</div>
 
 		<script>
