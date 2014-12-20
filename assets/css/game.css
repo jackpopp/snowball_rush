@@ -56,7 +56,7 @@ h1,h2,h3 {
 	position: absolute;
 	width: 1024px;
 	height: 576px;
-	top: 61px;
+	top: 31px;
 }
 
 .start-game {
@@ -67,7 +67,51 @@ h1,h2,h3 {
 .start-button {
 	position: absolute;
 	left: 524px;
-	top: 239px;
+	top: 233px;
+	transition: 0.5s all;
+}
+
+.start-button:hover {
+	left: 532px;
+	transition: 0.5s all;
+	-ms-transform: rotate(3.5deg); /* IE 9 */
+    -webkit-transform: rotate(3.5deg); /* Chrome, Safari, Opera */
+    transform: rotate(3.5deg);
+}
+
+.game-over {
+	position: absolute;
+	top: 150px;
+}
+
+.game-over-content {
+	position: absolute;
+	width: 100%;
+	top: 70px;
+	color: #FFF;
+}
+
+.play-again {
+	position: absolute;
+	left: 446px;
+	top: 228px;
+	transition: 0.5s all;
+}
+
+.play-again:hover {
+	left: 446px;
+	transition: 0.5s all;
+	-ms-transform: rotate(-5deg); /* IE 9 */
+    -webkit-transform: rotate(-5deg); /* Chrome, Safari, Opera */
+    transform: rotate(-5deg);
+}
+
+.game-over-content h1 {
+	font-size: 55px;
+}
+
+.game-over-content h2 {
+	font-size: 35px;
 }
 
 @media screen and (max-width: 1326px) {

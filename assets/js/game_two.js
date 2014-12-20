@@ -25,7 +25,7 @@ platforms = [
     },*/
 ]
 
-var game = new Phaser.Game(WORLD_WIDTH, WORLD_HEIGHT, Phaser.AUTO, '', { preload: preload, create: create, update: update }),
+var game = new Phaser.Game(WORLD_WIDTH, WORLD_HEIGHT, Phaser.AUTO, 'game-container', { preload: preload, create: create, update: update }),
 
 // background
 mountainOne,
@@ -62,12 +62,14 @@ metersText = null,
 currentPlayerSpeed = 200,
 playerLastX = 0,
 lastCameraX = 0;
+
 MIN_WIDTH = game.width/4,
 MAX_WIDTH = game.width/2,
 MAX_Y = game.height - 150,
-MIN_Y = 100,
+MIN_Y = 150,
 MIN_X = 40,
 MAX_X = 150,
+
 WORLD_BOUNDS = 2000,
 SPEED_INCREMENT = 25,
 BG_COLOUR = "#73e8ff",
@@ -149,6 +151,18 @@ function create()
     {
         checkCursors()
     };
+
+    game.paused = true;
+}
+
+game.pauseGame = function()
+{
+    game.paused = true;
+}
+
+game.resumeGame = function()
+{
+    game.paused = false;
 }
 
 /**
@@ -157,7 +171,7 @@ function create()
 
 function addPlayer()
 {
-    player = game.add.sprite(50, 100, 'player');
+    player = game.add.sprite(30, 30, 'player');
     game.physics.p2.enable(player, false);
 
     player.body.setRectangleFromSprite();
@@ -178,7 +192,7 @@ function addPlayer()
 function init()
 {
     game.started = true;
-    generateGround(150, 300, groundsCollisionGroup, playerCollisionGroup);
+    generateGround(150, 150, groundsCollisionGroup, playerCollisionGroup, 0, true);
     generateRandomGround();
     player = addPlayer();
     game.camera.follow(player);   
@@ -193,7 +207,7 @@ function createText()
 function createScoreText()
 {
     var style = { font: "35px Londrina Solid", fill: TEXT_COLOUR }; 
-    scoreText = game.add.text(10, 10, score.toString(), style);
+    scoreText = game.add.text(40, 30, score.toString(), style);
     scoreText.fixedToCamera = true
 }
 
@@ -273,50 +287,6 @@ function update()
 }
 
 /**
-    Checks if the game is over
-*/
-
-function isGameOver()
-{
-    //console.log(player.y >= (canvas.height - player.height))
-    return player.y >= (WORLD_HEIGHT - player.height)
-}
-
-function gameOver()
-{
-    player.static = true;
-    player.body.moveRight(0)
-    game.over = true;
-    //game.started = false;
-
-    text = "GAME OVER";
-    fontSize = 60;
-    style = { font: fontSize+"px Londrina Solid", fill: TEXT_COLOUR, align: "center" };
-    textOne = game.add.text( (game.camera.x + (game.width/3) + 50 ), (game.world.centerY - 30), text, style);
-    textOne.inputEnabled = true;
-
-    text = "You scored "+Math.floor((score/10)*(Math.floor(meters/10)))+"\n\nPlay again?";
-    fontSize = 30;
-    style = { font: fontSize+"px Londrina Solid", fill: TEXT_COLOUR, align: "center" };
-    textTwo = game.add.text( (game.camera.x + (game.width/3) + 110 ), (game.world.centerY + 35), text, style);
-    textTwo.inputEnabled = true;
-
-    // add rectagnle click area
-
-    textOne.events.onInputDown.add(restartGame, this);
-    textTwo.events.onInputDown.add(restartGame, this);
-
-    game.paused = true;
-    //game.state.pause()
-}
-
-function restartGame()
-{
-    //game.state.restart()
-    //init()
-}
-
-/**
     Check if camera is near edge of screen, if it is make game longer
     and add new grounds
 **/
@@ -378,11 +348,15 @@ function checkCursors()
             lastKeyCode = game.input.keyboard.lastKey.keyCode;
 }
 
-function generateGround(x, y, collisionGroupToSet, collisionGroupsToHit, callback, width)
+function generateGround(x, y, collisionGroupToSet, collisionGroupsToHit, index, snowflakeGood)
 {
     //height = (height == undefined) ? 300 : height);
 
-    index = generateRandomNumberBetweenMinAndMax(0, platforms.length - 1)
+    if (index === undefined)
+    {
+        index = generateRandomNumberBetweenMinAndMax(0, platforms.length - 1)
+    }
+    
     platform = platforms[index]
     //console.log(platform)
 
@@ -404,12 +378,12 @@ function generateGround(x, y, collisionGroupToSet, collisionGroupsToHit, callbac
     if (ground.width > 150)
     {
         // add snowflakes
-        generateSnowflake(x - 75, y - 50)
-        generateSnowflake(x + 75, y - 50)
+        generateSnowflake(x - 75, y - 50, snowflakeGood)
+        generateSnowflake(x + 75, y - 50, snowflakeGood)
     }
     else
     {
-        generateSnowflake(x, y - 50)
+        generateSnowflake(x, y - 50, snowflakeGood)
     }
 
 
@@ -417,16 +391,23 @@ function generateGround(x, y, collisionGroupToSet, collisionGroupsToHit, callbac
 
 }
 
-function generateSnowflake(x, y)
+function generateSnowflake(x, y, snowflakeGood)
 {
     flake = null;
 
-    if (generateRandomNumberBetweenMinAndMax(1, GENERATE_BLACK_SNOWFAKE) === GENERATE_BLACK_SNOWFAKE)
+    if (snowflakeGood === undefined)
     {
-        flake = snowflakes.create(x, y , 'snowflake_black');
-        flake.bad = true;
+        if (generateRandomNumberBetweenMinAndMax(1, GENERATE_BLACK_SNOWFAKE) === GENERATE_BLACK_SNOWFAKE)
+        {
+            flake = snowflakes.create(x, y , 'snowflake_black');
+            flake.bad = true;
+        }
+        else
+        {
+            flake = snowflakes.create(x, y , 'snowflake');
+        }
     }
-    else
+    else 
     {
         flake = snowflakes.create(x, y , 'snowflake');
     }
@@ -476,7 +457,9 @@ function generateRandomGround()
 
         width = generateGround(x, y, groundsCollisionGroup, playerCollisionGroup)
 
-        currentX+= 300;
+        //console.log(width)
+
+        currentX+= width;
         currentY = y;
     }
 }
@@ -584,41 +567,67 @@ function render() {
     //game.debug.spriteCoords(player, 32, 500);
 }
 
-function restart()
+/**
+    Checks if the game is over
+*/
+
+function isGameOver()
 {
-    /*
-    lastKeyCode = null,
-    currentY = 0,
-    currentYPosition = 1,
-    currentX = 250,
-    mulitipler = 1,
-    scoreText = null,
-    score = 10,
-    meters = 0,
-    metersText = null,
-    currentPlayerSpeed = 200,
-    playerLastX = 0,
-    lastCameraX = 0;
-    WORLD_BOUNDS = 2000,
-    SPEED_INCREMENT = 25,
-    currentWorldBounds = WORLD_BOUNDS; 
-    game.paused = false
-    game.over = false; 
-    */
-    window.location.reload()
-
-    // reset the gropus
-    // reset the players
-    // reset the ice
-    // reset the bounds
-
-    // run innit
+    //console.log(player.y >= (canvas.height - player.height))
+    return player.y >= (WORLD_HEIGHT - player.height)
 }
 
-$(document).on('click', 'canvas', function()
+function gameOver()
+{
+    player.static = true;
+    player.body.moveRight(0)
+    game.over = true;
+    //game.started = false;
+    
+    /*
+    text = "GAME OVER";
+    fontSize = 60;
+    style = { font: fontSize+"px Londrina Solid", fill: TEXT_COLOUR, align: "center" };
+    textOne = game.add.text( (game.camera.x + (game.width/3) + 50 ), (game.world.centerY - 30), text, style);
+    textOne.inputEnabled = true;
+
+    text = "You scored "+Math.floor((score/10)*(Math.floor(meters/10)))+"\n\nPlay again?";
+    fontSize = 30;
+    style = { font: fontSize+"px Londrina Solid", fill: TEXT_COLOUR, align: "center" };
+    textTwo = game.add.text( (game.camera.x + (game.width/3) + 110 ), (game.world.centerY + 35), text, style);
+    textTwo.inputEnabled = true;*/
+
+    // add rectagnle click area
+    game.paused = true;
+    //game.state.pause()
+
+    // hide canvas
+    $('.js-game-container').fadeOut()
+    // show game over screen
+    $('.js-score').html(Math.floor((score/10)*(Math.floor(meters/10))))
+    $('.js-game-over').fadeIn()
+}
+
+function restart()
+{
+    window.location.reload()
+}
+
+// stuff out of the game
+
+$(document).on('click', '.js-game-over', function()
 {
     if (game.over)
     {
         restart()
     }
+})
+
+$(document).on('click', '.js-start-game', function()
+{
+   $(this).fadeOut()
+   $('.js-game-container').fadeIn()
+   setTimeout(function(){
+        game.paused = false;
+   }, 500)
 })
