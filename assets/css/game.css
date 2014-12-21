@@ -112,6 +112,34 @@ h1,h2,h3 {
 	font-size: 35px;
 }
 
+.share {
+	position: absolute;
+	left: 654px;
+	top: 251px;
+}
+
+.share-twitter {
+	position: absolute;
+	left: 82px;
+	top: 16px;
+	transition: 0.5s all;
+}
+
+.share-twitter:hover {
+	transform: rotate(6deg);
+}
+
+.share-facebook {
+	position: absolute;
+	top: 20px;
+	left: 106px;
+	transition: 0.5s all;
+}
+
+.share-facebook:hover {
+	transform: rotate(6deg);
+}
+
 @media screen and (max-width: 1326px) {
 
 	.frame {

@@ -620,7 +620,7 @@ function restart()
 
 // stuff out of the game
 
-$(document).on('click', '.js-game-over', function()
+$(document).on('click', '.js-play-again', function()
 {
     if (game.over)
     {
@@ -635,4 +635,19 @@ $(document).on('click', '.js-start-game', function()
    setTimeout(function(){
         game.paused = false;
    }, 500)
+})
+
+$(document).on('click', '.js-share', function(){
+    u = document.URL
+    score = Math.floor((score/10)*(Math.floor(meters/10)))
+    text = "I just scored "+score+" on #snowballrush. See if you can beat my score."
+    uri = ($(this).data('share-type') === 'facebook') ? 'http://www.facebook.com/sharer.php?u=' + encodeURIComponent(u) + '&t=' + encodeURIComponent(text) : 'http://www.twitter.com/share?' + encodeURIComponent(u) + '&text=' + encodeURIComponent(text)
+
+    width = 500;
+    height = 300;
+    leftPosition = (window.screen.width / 2) - ((width / 2) + 10);
+    topPosition = (window.screen.height / 2) - ((height / 2) + 50);
+    windowFeatures = "status=no,height=" + height + ",width=" + width + ",resizable=yes,left=" + leftPosition + ",top=" + topPosition + ",screenX=" + leftPosition + ",screenY=" + topPosition + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no";
+    window.open(uri, 'sharer', windowFeatures);
+    return false;
 })
